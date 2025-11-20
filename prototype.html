@@ -1,0 +1,2866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能仓储管理系统 - 交互原型</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 顶部导航 */
+        .header {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 64px;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding: 0 24px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1890ff;
+            margin-right: 48px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .nav-item {
+            padding: 8px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .nav-item.active {
+            background: #1890ff;
+            color: #fff;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 主内容区 */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 88px 24px 24px;
+        }
+
+        /* 页面容器 */
+        .page {
+            display: none;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 24px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        /* 子菜单 */
+        .sub-menu {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .sub-menu-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .sub-menu-item:hover {
+            color: #1890ff;
+        }
+
+        .sub-menu-item.active {
+            color: #1890ff;
+            border-bottom-color: #1890ff;
+        }
+
+        /* 筛选栏 */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .input, .select {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            min-width: 150px;
+            transition: all 0.3s;
+        }
+
+        .input:focus, .select:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24,144,255,0.2);
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: #1890ff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #40a9ff;
+        }
+
+        .btn-default {
+            background: #fff;
+            color: #666;
+            border: 1px solid #d9d9d9;
+        }
+
+        .btn-default:hover {
+            color: #1890ff;
+            border-color: #1890ff;
+        }
+
+        .btn-success {
+            background: #52c41a;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #73d13d;
+        }
+
+        .btn-warning {
+            background: #faad14;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: #ff4d4f;
+            color: #fff;
+        }
+
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+
+        /* 操作栏 */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        /* 表格 */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .table th {
+            background: #fafafa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #262626;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #595959;
+        }
+
+        .table tr:hover {
+            background: #f5f7fa;
+        }
+
+        .table tr.highlight {
+            background: #e6f7ff;
+        }
+
+        /* 状态标签 */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+
+        .badge-warning {
+            background: #fffbe6;
+            color: #faad14;
+            border: 1px solid #ffe58f;
+        }
+
+        .badge-danger {
+            background: #fff1f0;
+            color: #ff4d4f;
+            border: 1px solid #ffccc7;
+        }
+
+        .badge-info {
+            background: #e6f7ff;
+            color: #1890ff;
+            border: 1px solid #91d5ff;
+        }
+
+        /* 弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            font-size: 20px;
+            color: #8c8c8c;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: #262626;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* 表单 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #262626;
+            font-weight: 500;
+        }
+
+        .form-label.required::after {
+            content: '*';
+            color: #ff4d4f;
+            margin-left: 4px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #8c8c8c;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #262626;
+        }
+
+        .stat-value.primary {
+            color: #1890ff;
+        }
+
+        /* 提示消息 */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #f6ffed;
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+        }
+
+        .alert-warning {
+            background: #fffbe6;
+            border: 1px solid #ffe58f;
+            color: #faad14;
+        }
+
+        .alert-danger {
+            background: #fff1f0;
+            border: 1px solid #ffccc7;
+            color: #ff4d4f;
+        }
+
+        .alert-info {
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            color: #1890ff;
+        }
+
+        /* 图表占位 */
+        .chart-placeholder {
+            height: 300px;
+            background: #fafafa;
+            border: 1px dashed #d9d9d9;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8c8c8c;
+            font-size: 14px;
+        }
+
+        /* 复选框 */
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .pagination-btn {
+            padding: 4px 12px;
+            border: 1px solid #d9d9d9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .pagination-btn:hover {
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+
+        .pagination-info {
+            color: #8c8c8c;
+            font-size: 14px;
+        }
+
+        /* 子页面 */
+        .sub-page {
+            display: none;
+        }
+
+        .sub-page.active {
+            display: block;
+        }
+
+        /* 日期切换按钮 */
+        .date-switch {
+            display: inline-flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .pill-btn {
+            padding: 6px 16px;
+            border-radius: 16px;
+            border: 1px solid #d9d9d9;
+            background: #fff;
+            color: #666;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pill-btn.active {
+            border-color: #1890ff;
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        /* 时间轴 */
+        .timeline {
+            border-left: 2px solid #e6f7ff;
+            padding-left: 24px;
+            margin: 16px 0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #1890ff;
+            background: #fff;
+        }
+
+        .timeline-item.completed::before {
+            background: #1890ff;
+        }
+
+        .timeline-item.current::before {
+            background: #fff;
+            border-color: #faad14;
+        }
+
+        .timeline-status {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #8c8c8c;
+            margin-bottom: 4px;
+        }
+
+        .timeline-status strong {
+            color: #262626;
+        }
+
+        /* 角色标签 */
+        .tag-role {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            background: #e6f7ff;
+            color: #1890ff;
+            margin-right: 6px;
+        }
+
+        .tag-role.support {
+            background: #fff1f0;
+            color: #ff4d4f;
+        }
+
+        .tag-role.compliance {
+            background: #fffbe6;
+            color: #faad14;
+        }
+
+        /* 卡片分区 */
+        .card-section {
+            background: #fff;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 12px;
+        }
+
+        /* 图表区 */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        /* 附件上传区域 */
+        .upload-area {
+            border: 1px dashed #d9d9d9;
+            border-radius: 4px;
+            padding: 16px;
+            text-align: center;
+            color: #8c8c8c;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+
+        /* 条件构建器 */
+        .builder-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .logic-operator {
+            min-width: 60px;
+            text-align: center;
+            font-size: 13px;
+            color: #8c8c8c;
+            border: 1px dashed #d9d9d9;
+            border-radius: 4px;
+            line-height: 32px;
+        }
+
+        .rule-badge {
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            background: #f0f5ff;
+            color: #2f54eb;
+            margin-right: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .status-dot.success {
+            background: #52c41a;
+        }
+
+        .status-dot.warning {
+            background: #faad14;
+        }
+
+        .status-dot.danger {
+            background: #ff4d4f;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header">
+        <div class="nav-container">
+            <div class="logo">智能仓储管理系统</div>
+            <div class="nav-menu">
+                <div class="nav-item active" data-page="inventory">一盘货管理</div>
+                <div class="nav-item" data-page="allocation">智能分仓</div>
+                <div class="nav-item" data-page="order-split">订单合拆</div>
+                <div class="nav-item" data-page="fulfillment">履约看板</div>
+                <div class="nav-item" data-page="rules">规则配置</div>
+            </div>
+            <div class="user-info">
+                <span>运营人员</span>
+                <span>|</span>
+                <span>退出</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-container">
+        <!-- 一盘货管理 -->
+        <div class="page active" id="page-inventory">
+            <div class="page-title">一盘货管理</div>
+            <div class="sub-menu">
+                <div class="sub-menu-item active" data-sub="dashboard">库存看板</div>
+                <div class="sub-menu-item" data-sub="alert">预警管理</div>
+                <div class="sub-menu-item" data-sub="transfer">调拨跟踪</div>
+            </div>
+
+            <!-- 库存看板 -->
+            <div class="sub-page active" id="sub-dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">总SKU数量</div>
+                        <div class="stat-value primary">1,234</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">总库存数</div>
+                        <div class="stat-value primary">56,789</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">在库量</div>
+                        <div class="stat-value">45,678</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">在途量</div>
+                        <div class="stat-value">8,901</div>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <div class="filter-bar">
+                        <div class="filter-item">
+                            <span class="filter-label">SKU编码/名称：</span>
+                            <input type="text" class="input" placeholder="支持模糊搜索">
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-label">仓点：</span>
+                            <select class="select">
+                                <option>全部</option>
+                                <option>广州</option>
+                                <option>德国</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-label">渠道：</span>
+                            <select class="select">
+                                <option>全部</option>
+                                <option>TikTok</option>
+                                <option>独立站</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-label">库存状态：</span>
+                            <select class="select">
+                                <option>全部</option>
+                                <option>在途</option>
+                                <option>在库</option>
+                                <option>锁定</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-default">高级筛选</button>
+                        <button class="btn btn-primary">查询</button>
+                    </div>
+                    <button class="btn btn-default">导出</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="checkbox"></th>
+                                <th>SKU编码</th>
+                                <th>SKU名称</th>
+                                <th>仓点</th>
+                                <th>渠道</th>
+                                <th>在库量</th>
+                                <th>在途量</th>
+                                <th>锁定量</th>
+                                <th>更新时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="highlight">
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td>SKU12345</td>
+                                <td>商品A-红色-L码</td>
+                                <td>德国</td>
+                                <td>TikTok</td>
+                                <td>120</td>
+                                <td>50</td>
+                                <td>30</td>
+                                <td>2024-01-15 10:30</td>
+                                <td><button class="btn btn-sm btn-primary" onclick="showDetail('SKU12345')">查看</button></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td>SKU12346</td>
+                                <td>商品B-蓝色-M码</td>
+                                <td>广州</td>
+                                <td>独立站</td>
+                                <td>250</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>2024-01-15 09:20</td>
+                                <td><button class="btn btn-sm btn-primary" onclick="showDetail('SKU12346')">查看</button></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td>SKU12347</td>
+                                <td>商品C-黑色-XL码</td>
+                                <td>德国</td>
+                                <td>TikTok</td>
+                                <td>80</td>
+                                <td>100</td>
+                                <td>20</td>
+                                <td>2024-01-15 11:15</td>
+                                <td><button class="btn btn-sm btn-primary" onclick="showDetail('SKU12347')">查看</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <div class="pagination-info">共 156 条，每页 20 条</div>
+                    <button class="pagination-btn">上一页</button>
+                    <button class="pagination-btn">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">下一页</button>
+                </div>
+            </div>
+
+            <!-- 预警管理 -->
+            <div class="sub-page" id="sub-alert">
+                <div class="alert alert-danger">
+                    <strong>预警：</strong>SKU12345在德国仓在库量仅20件，低于安全值50件
+                </div>
+
+                <div class="filter-bar">
+                    <div class="filter-item">
+                        <span class="filter-label">紧急程度：</span>
+                        <select class="select">
+                            <option>全部</option>
+                            <option>严重</option>
+                            <option>一般</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label">预警时间：</span>
+                        <input type="date" class="input">
+                    </div>
+                    <button class="btn btn-primary">查询</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>SKU编码</th>
+                                <th>SKU名称</th>
+                                <th>预警仓点</th>
+                                <th>当前库存</th>
+                                <th>安全值</th>
+                                <th>预警时间</th>
+                                <th>紧急程度</th>
+                                <th>推荐方案</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>SKU12345</td>
+                                <td>商品A-红色-L码</td>
+                                <td>德国</td>
+                                <td>20</td>
+                                <td>50</td>
+                                <td>2024-01-15 10:30</td>
+                                <td><span class="badge badge-danger">严重</span></td>
+                                <td>从波兰仓调拨100件，时效3天，成本200元</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success" onclick="confirmTransfer()">确认调拨</button>
+                                    <button class="btn btn-sm btn-warning" onclick="modifyTransfer()">修改方案</button>
+                                    <button class="btn btn-sm btn-default" onclick="delayAlert()">延后处理</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>SKU12346</td>
+                                <td>商品B-蓝色-M码</td>
+                                <td>广州</td>
+                                <td>45</td>
+                                <td>80</td>
+                                <td>2024-01-15 09:20</td>
+                                <td><span class="badge badge-warning">一般</span></td>
+                                <td>从深圳仓调拨50件，时效2天，成本150元</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success" onclick="confirmTransfer()">确认调拨</button>
+                                    <button class="btn btn-sm btn-warning" onclick="modifyTransfer()">修改方案</button>
+                                    <button class="btn btn-sm btn-default" onclick="delayAlert()">延后处理</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 调拨跟踪 -->
+            <div class="sub-page" id="sub-transfer">
+                <div class="filter-bar">
+                    <div class="filter-item">
+                        <span class="filter-label">调拨单号：</span>
+                        <input type="text" class="input" placeholder="请输入调拨单号">
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label">状态：</span>
+                        <select class="select">
+                            <option>全部</option>
+                            <option>待出库</option>
+                            <option>在途</option>
+                            <option>已完成</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label">时间：</span>
+                        <input type="date" class="input">
+                    </div>
+                    <button class="btn btn-primary">查询</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>调拨单号</th>
+                                <th>SKU编码</th>
+                                <th>SKU名称</th>
+                                <th>调出仓</th>
+                                <th>调入仓</th>
+                                <th>调拨数量</th>
+                                <th>预计到仓时间</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>TB20240115001</td>
+                                <td>SKU12345</td>
+                                <td>商品A-红色-L码</td>
+                                <td>波兰</td>
+                                <td>德国</td>
+                                <td>100</td>
+                                <td>2024-01-18 14:00</td>
+                                <td><span class="badge badge-info">在途</span></td>
+                                <td><button class="btn btn-sm btn-primary" onclick="showTransferDetail('TB20240115001')">详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>TB20240114002</td>
+                                <td>SKU12346</td>
+                                <td>商品B-蓝色-M码</td>
+                                <td>深圳</td>
+                                <td>广州</td>
+                                <td>50</td>
+                                <td>2024-01-17 10:00</td>
+                                <td><span class="badge badge-success">已完成</span></td>
+                                <td><button class="btn btn-sm btn-primary" onclick="showTransferDetail('TB20240114002')">详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>TB20240115003</td>
+                                <td>SKU12347</td>
+                                <td>商品C-黑色-XL码</td>
+                                <td>上海</td>
+                                <td>广州</td>
+                                <td>80</td>
+                                <td>2024-01-19 16:00</td>
+                                <td><span class="badge badge-warning">待出库</span></td>
+                                <td><button class="btn btn-sm btn-primary" onclick="showTransferDetail('TB20240115003')">详情</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 智能分仓 -->
+        <div class="page" id="page-allocation">
+            <div class="page-title">智能分仓</div>
+            <div class="sub-menu">
+                <div class="sub-menu-item active" data-sub="pending">待处理订单</div>
+                <div class="sub-menu-item" data-sub="adjust">分仓调整</div>
+            </div>
+
+            <!-- 待处理订单 -->
+            <div class="sub-page active" id="sub-pending">
+                <div class="action-bar">
+                    <div class="filter-bar">
+                        <div class="filter-item">
+                            <span class="filter-label">订单号：</span>
+                            <input type="text" class="input" placeholder="请输入订单号">
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-label">渠道：</span>
+                            <select class="select">
+                                <option>全部</option>
+                                <option>TikTok</option>
+                                <option>独立站</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary">查询</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="batchConfirm()">批量确认分仓</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="checkbox"></th>
+                                <th>订单号</th>
+                                <th>用户地址</th>
+                                <th>商品数</th>
+                                <th>时效要求</th>
+                                <th>推荐仓点</th>
+                                <th>预计时效</th>
+                                <th>物流成本</th>
+                                <th>匹配规则</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td>ORD20240115001</td>
+                                <td>德国柏林 10115</td>
+                                <td>3</td>
+                                <td>48小时达</td>
+                                <td>德国仓</td>
+                                <td>36小时</td>
+                                <td>€15.50</td>
+                                <td>地址就近+现货充足</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="confirmAllocation('ORD20240115001')">确认</button>
+                                    <button class="btn btn-sm btn-default" onclick="adjustAllocation('ORD20240115001')">调整</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td>ORD20240115002</td>
+                                <td>法国巴黎 75001</td>
+                                <td>2</td>
+                                <td>72小时达</td>
+                                <td>德国仓</td>
+                                <td>48小时</td>
+                                <td>€12.00</td>
+                                <td>地址就近+成本最优</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="confirmAllocation('ORD20240115002')">确认</button>
+                                    <button class="btn btn-sm btn-default" onclick="adjustAllocation('ORD20240115002')">调整</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td>ORD20240115003</td>
+                                <td>中国北京 100000</td>
+                                <td>5</td>
+                                <td>48小时达</td>
+                                <td>广州仓</td>
+                                <td>24小时</td>
+                                <td>¥25.00</td>
+                                <td>地址就近+时效匹配</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="confirmAllocation('ORD20240115003')">确认</button>
+                                    <button class="btn btn-sm btn-default" onclick="adjustAllocation('ORD20240115003')">调整</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 分仓调整 -->
+            <div class="sub-page" id="sub-adjust">
+                <div class="filter-bar">
+                    <div class="filter-item">
+                        <span class="filter-label">订单号：</span>
+                        <input type="text" class="input" placeholder="请输入订单号">
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label">渠道：</span>
+                        <select class="select">
+                            <option>全部</option>
+                            <option>TikTok</option>
+                            <option>独立站</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary">查询</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>订单号</th>
+                                <th>用户地址</th>
+                                <th>商品数</th>
+                                <th>当前推荐仓</th>
+                                <th>调整后仓点</th>
+                                <th>调整理由</th>
+                                <th>调整时间</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ORD20240114001</td>
+                                <td>德国柏林 10115</td>
+                                <td>3</td>
+                                <td>德国仓</td>
+                                <td>波兰仓</td>
+                                <td>锁定库存</td>
+                                <td>2024-01-14 15:30</td>
+                                <td><span class="badge badge-success">分仓调整完成</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 订单合拆 -->
+        <div class="page" id="page-order-split">
+            <div class="page-title">订单合拆</div>
+            <div class="sub-menu">
+                <div class="sub-menu-item active" data-sub="split">拆单管理</div>
+                <div class="sub-menu-item" data-sub="merge">合拆调整</div>
+            </div>
+
+            <!-- 拆单管理 -->
+            <div class="sub-page active" id="sub-split">
+                <div class="action-bar">
+                    <div class="filter-bar">
+                        <div class="filter-item">
+                            <span class="filter-label">主订单号：</span>
+                            <input type="text" class="input" placeholder="请输入主订单号">
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-label">状态：</span>
+                            <select class="select">
+                                <option>全部</option>
+                                <option>待确认</option>
+                                <option>已确认</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary">查询</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="batchConfirmSplit()">批量确认拆单</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="checkbox"></th>
+                                <th>主订单号</th>
+                                <th>用户</th>
+                                <th>商品数量</th>
+                                <th>子订单数</th>
+                                <th>涉及仓点</th>
+                                <th>拆单状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td>ORD20240115010</td>
+                                <td>张三</td>
+                                <td>5</td>
+                                <td>2</td>
+                                <td>德国仓、波兰仓</td>
+                                <td><span class="badge badge-warning">待确认</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="showSplitDetail('ORD20240115010')">查看详情</button>
+                                    <button class="btn btn-sm btn-success" onclick="confirmSplit('ORD20240115010')">确认</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td>ORD20240115011</td>
+                                <td>李四</td>
+                                <td>8</td>
+                                <td>3</td>
+                                <td>广州仓、德国仓、波兰仓</td>
+                                <td><span class="badge badge-warning">待确认</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="showSplitDetail('ORD20240115011')">查看详情</button>
+                                    <button class="btn btn-sm btn-success" onclick="confirmSplit('ORD20240115011')">确认</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 合拆调整 -->
+            <div class="sub-page" id="sub-merge">
+                <div class="action-bar">
+                    <button class="btn btn-primary" onclick="showMergeModal()">新建合单</button>
+                    <button class="btn btn-default" onclick="showSplitModal()">手动拆分</button>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="filter-item">
+                        <span class="filter-label">主订单号：</span>
+                        <input type="text" class="input" placeholder="请输入主订单号">
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label">状态：</span>
+                        <select class="select">
+                            <option>全部</option>
+                            <option>待发货</option>
+                            <option>已合并</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary">查询</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>主订单号</th>
+                                <th>用户</th>
+                                <th>收货地址</th>
+                                <th>商品数量</th>
+                                <th>子订单数</th>
+                                <th>操作类型</th>
+                                <th>操作理由</th>
+                                <th>操作时间</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ORD20240114005</td>
+                                <td>王五</td>
+                                <td>中国上海 200000</td>
+                                <td>6</td>
+                                <td>1</td>
+                                <td>合并</td>
+                                <td>用户要求合并发货</td>
+                                <td>2024-01-14 16:20</td>
+                                <td><span class="badge badge-success">已合并</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 履约看板 -->
+        <div class="page" id="page-fulfillment">
+            <div class="page-title">履约看板</div>
+            <div class="sub-menu">
+                <div class="sub-menu-item active" data-sub="order-monitor">订单监控</div>
+                <div class="sub-menu-item" data-sub="exception">异常处理</div>
+                <div class="sub-menu-item" data-sub="data">数据统计</div>
+            </div>
+
+            <!-- 订单监控 -->
+            <div class="sub-page active" id="sub-order-monitor">
+                <div class="card-section">
+                    <div class="card-section-title">核心监控卡片</div>
+                    <div class="date-switch">
+                        <button class="pill-btn active">今日</button>
+                        <button class="pill-btn">昨日</button>
+                        <button class="pill-btn">近7天</button>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">履约订单数</div>
+                            <div class="stat-value primary">1,234</div>
+                            <div class="stat-label">较昨日 +8%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">待处理异常</div>
+                            <div class="stat-value" style="color:#ff4d4f;">32</div>
+                            <div class="stat-label">含清关异常 8</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">清关完成率</div>
+                            <div class="stat-value">96%</div>
+                            <div class="stat-label">目标 ≥95%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">配送签收率</div>
+                            <div class="stat-value">92%</div>
+                            <div class="stat-label">目标 ≥90%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <div class="filter-bar">
+                        <div class="filter-item">
+                            <span class="filter-label">订单号：</span>
+                            <input type="text" class="input" placeholder="请输入订单号">
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-label">仓点：</span>
+                            <select class="select">
+                                <option>全部</option>
+                                <option>广州仓</option>
+                                <option>德国仓</option>
+                                <option>波兰仓</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-label">履约状态：</span>
+                            <select class="select">
+                                <option>全部</option>
+                                <option>进行中</option>
+                                <option>已完成</option>
+                                <option>异常</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-label">时间范围：</span>
+                            <input type="date" class="input">
+                        </div>
+                        <button class="btn btn-default">高级筛选</button>
+                        <button class="btn btn-primary">查询</button>
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn btn-default" onclick="openExportPanel()">导出</button>
+                        <button class="btn btn-primary">实时刷新</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>订单号</th>
+                                <th>用户</th>
+                                <th>下单时间</th>
+                                <th>当前环节</th>
+                                <th>履约状态</th>
+                                <th>涉及仓点</th>
+                                <th>物流商</th>
+                                <th>预计签收时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ORD20240116001</td>
+                                <td>张三</td>
+                                <td>2024-01-16 09:20</td>
+                                <td>配送</td>
+                                <td><span class="badge badge-success">完成</span></td>
+                                <td>德国仓</td>
+                                <td>DHL</td>
+                                <td>2024-01-17 18:00</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="openOrderTrack('ORD20240116001')">跟踪</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ORD20240116002</td>
+                                <td>李四</td>
+                                <td>2024-01-16 10:05</td>
+                                <td>清关</td>
+                                <td><span class="badge badge-warning">进行中</span></td>
+                                <td>广州仓</td>
+                                <td>顺丰</td>
+                                <td>2024-01-19 12:00</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="openOrderTrack('ORD20240116002')">跟踪</button>
+                                    <button class="btn btn-sm btn-default" onclick="openCustomsDetail()">清关详情</button>
+                                </td>
+                            </tr>
+                            <tr class="highlight">
+                                <td>ORD20240116003</td>
+                                <td>王五</td>
+                                <td>2024-01-16 08:45</td>
+                                <td>清关</td>
+                                <td><span class="badge badge-danger">异常</span></td>
+                                <td>波兰仓</td>
+                                <td>GLS</td>
+                                <td>2024-01-20 09:00</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="openOrderTrack('ORD20240116003')">跟踪</button>
+                                    <button class="btn btn-sm btn-danger" onclick="handleException('ORD20240116003')">异常处理</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 异常处理 -->
+            <div class="sub-page" id="sub-exception">
+                <div class="alert alert-warning">
+                    当前共有 <strong>32</strong> 条履约异常待处理，建议优先处理红色紧急异常（24小时内需闭环）。
+                </div>
+                <div class="filter-bar">
+                    <div class="filter-item">
+                        <span class="filter-label">异常类型：</span>
+                        <select class="select">
+                            <option>全部</option>
+                            <option>清关异常</option>
+                            <option>物流中断</option>
+                            <option>库存不足</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label">涉及角色：</span>
+                        <select class="select">
+                            <option>全部</option>
+                            <option>运营</option>
+                            <option>客服</option>
+                            <option>合规专员</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label">紧急程度：</span>
+                        <select class="select">
+                            <option>全部</option>
+                            <option>红色（24h）</option>
+                            <option>黄色（72h）</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary">查询</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>订单号</th>
+                                <th>异常类型</th>
+                                <th>发生时间</th>
+                                <th>当前环节</th>
+                                <th>紧急程度</th>
+                                <th>涉及角色</th>
+                                <th>处理状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ORD20240115088</td>
+                                <td>清关数据校验失败</td>
+                                <td>2024-01-15 22:10</td>
+                                <td>清关</td>
+                                <td><span class="badge badge-danger">红色</span></td>
+                                <td><span class="tag-role">运营</span><span class="tag-role compliance">合规</span></td>
+                                <td><span class="badge badge-warning">待处理</span></td>
+                                <td><button class="btn btn-sm btn-primary" onclick="handleException('ORD20240115088')">处理</button></td>
+                            </tr>
+                            <tr>
+                                <td>ORD20240115092</td>
+                                <td>物流轨迹中断</td>
+                                <td>2024-01-15 18:30</td>
+                                <td>配送</td>
+                                <td><span class="badge badge-warning">黄色</span></td>
+                                <td><span class="tag-role">运营</span><span class="tag-role support">客服</span></td>
+                                <td><span class="badge badge-info">处理中</span></td>
+                                <td><button class="btn btn-sm btn-default" onclick="handleException('ORD20240115092')">查看</button></td>
+                            </tr>
+                            <tr>
+                                <td>ORD20240115095</td>
+                                <td>清关查验</td>
+                                <td>2024-01-15 16:05</td>
+                                <td>清关</td>
+                                <td><span class="badge badge-warning">黄色</span></td>
+                                <td><span class="tag-role compliance">合规</span></td>
+                                <td><span class="badge badge-success">已闭环</span></td>
+                                <td><button class="btn btn-sm btn-default" onclick="handleException('ORD20240115095')">日志</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 数据统计 -->
+            <div class="sub-page" id="sub-data">
+                <div class="card-section">
+                    <div class="card-section-title">数据筛选</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="form-label">时间范围：</div>
+                            <input type="month" class="input" value="2024-01">
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label">订单类型：</div>
+                            <select class="select">
+                                <option>全部</option>
+                                <option>跨境</option>
+                                <option>国内</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label">渠道：</div>
+                            <select class="select">
+                                <option>全部</option>
+                                <option>TikTok</option>
+                                <option>独立站</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label">仓点：</div>
+                            <select class="select">
+                                <option>全部</option>
+                                <option>广州仓</option>
+                                <option>德国仓</option>
+                                <option>波兰仓</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">生成统计</button>
+                </div>
+
+                <div class="chart-grid">
+                    <div class="card-section">
+                        <div class="card-section-title">每日履约订单数</div>
+                        <div class="chart-placeholder">柱状图（待开发）</div>
+                    </div>
+                    <div class="card-section">
+                        <div class="card-section-title">异常类型分布</div>
+                        <div class="chart-placeholder">饼图（待开发）</div>
+                    </div>
+                    <div class="card-section">
+                        <div class="card-section-title">清关维度指标</div>
+                        <div class="chart-placeholder">清关完成率/驳回率折线图</div>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <div>
+                        <button class="btn btn-default" onclick="openExportPanel()">导出</button>
+                    </div>
+                    <div class="filter-bar" style="justify-content:flex-end;">
+                        <div class="filter-item">
+                            <span class="filter-label">导出数据权限：</span>
+                            <select class="select">
+                                <option>运营角色（全量）</option>
+                                <option>商家角色（仅自有订单）</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 规则配置 -->
+        <div class="page" id="page-rules">
+            <div class="page-title">规则配置</div>
+            <div class="sub-menu">
+                <div class="sub-menu-item active" data-sub="rule-new">规则新建</div>
+                <div class="sub-menu-item" data-sub="rule-manage">规则管理</div>
+            </div>
+
+            <!-- 规则新建 -->
+            <div class="sub-page active" id="sub-rule-new">
+                <div class="card-section">
+                    <div class="card-section-title">基础信息</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="form-label required">规则类型：</div>
+                            <select class="select">
+                                <option>分仓规则</option>
+                                <option>合拆单规则</option>
+                                <option>库存预警规则</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label required">规则名称：</div>
+                            <input type="text" class="input" placeholder="例如：美国200公里内分仓规则">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="form-label">生效时间：</div>
+                            <input type="datetime-local" class="input">
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label">生效渠道：</div>
+                            <select class="select">
+                                <option>全部渠道</option>
+                                <option>TikTok</option>
+                                <option>独立站</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-section">
+                    <div class="card-section-title">限制条件配置</div>
+                    <div class="builder-row">
+                        <select class="select">
+                            <option>品类限制</option>
+                            <option>库存阈值</option>
+                            <option>距离阈值</option>
+                        </select>
+                        <select class="select">
+                            <option>允许</option>
+                            <option>禁止</option>
+                            <option>≥</option>
+                            <option>≤</option>
+                        </select>
+                        <input type="text" class="input" placeholder="服饰品类 / 15件 / 200公里">
+                        <button class="btn btn-default btn-sm">删除</button>
+                    </div>
+                    <div class="builder-row">
+                        <div class="logic-operator">且</div>
+                        <select class="select">
+                            <option>库存阈值</option>
+                            <option>距离阈值</option>
+                        </select>
+                        <select class="select">
+                            <option>≥</option>
+                            <option>≤</option>
+                        </select>
+                        <input type="number" class="input" placeholder="15">
+                        <button class="btn btn-default btn-sm">删除</button>
+                    </div>
+                    <button class="btn btn-default btn-sm">添加限制项</button>
+                </div>
+
+                <div class="card-section">
+                    <div class="card-section-title">规则测试</div>
+                    <div class="form-group">
+                        <div class="form-label">测试数据：</div>
+                        <textarea class="input" style="width:100%;height:100px;" placeholder="输入模拟场景，例如：订单地址 美国纽约，距洛杉矶180公里；SKU：服饰；库存20件；渠道：TikTok"></textarea>
+                    </div>
+                    <button class="btn btn-default" onclick="openRuleTest()">执行测试</button>
+                    <div class="alert alert-success" style="margin-top:12px;">
+                        测试结果：规则触发成功，执行动作：分至洛杉矶仓
+                    </div>
+                </div>
+
+                <div class="card-section">
+                    <div class="card-section-title">提交审核</div>
+                    <div class="form-group">
+                        <div class="form-label">审核说明：</div>
+                        <textarea class="input" style="width:100%;height:80px;" placeholder="说明规则适用场景与生效时间"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="submitRule()">提交审核</button>
+                </div>
+            </div>
+
+            <!-- 规则管理 -->
+            <div class="sub-page" id="sub-rule-manage">
+                <div class="alert alert-info">
+                    每日凌晨自动检测规则冲突，如有冲突将标红提示并要求处理。
+                </div>
+                <div class="filter-bar">
+                    <div class="filter-item">
+                        <span class="filter-label">规则类型：</span>
+                        <select class="select">
+                            <option>全部</option>
+                            <option>分仓规则</option>
+                            <option>合拆单规则</option>
+                            <option>库存规则</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label">状态：</span>
+                        <select class="select">
+                            <option>全部</option>
+                            <option>已生效</option>
+                            <option>待审核</option>
+                            <option>已禁用</option>
+                            <option>冲突待处理</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary">查询</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>规则名称</th>
+                                <th>类型</th>
+                                <th>限制条件</th>
+                                <th>优先级</th>
+                                <th>状态</th>
+                                <th>生效时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>洛杉矶分仓规则</td>
+                                <td><span class="rule-badge">分仓</span></td>
+                                <td>品类：服饰；库存≥15；距离≤200km</td>
+                                <td>8</td>
+                                <td><span class="badge badge-success">已生效</span></td>
+                                <td>2024-01-10 00:00</td>
+                                <td>
+                                    <button class="btn btn-sm btn-default" onclick="editRule()">编辑</button>
+                                    <button class="btn btn-sm btn-default" onclick="openRuleTest()">测试</button>
+                                    <button class="btn btn-sm btn-default" onclick="viewRuleLog()">日志</button>
+                                </td>
+                            </tr>
+                            <tr class="highlight">
+                                <td>纽约优先规则</td>
+                                <td><span class="rule-badge">分仓</span></td>
+                                <td>地址：纽约；库存≥20；渠道：TikTok</td>
+                                <td>7</td>
+                                <td><span class="badge badge-danger">冲突待处理</span></td>
+                                <td>2024-01-12 08:00</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger" onclick="resolveConflict()">处理冲突</button>
+                                    <button class="btn btn-sm btn-default" onclick="disableRule()">禁用</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>大促合单限制</td>
+                                <td><span class="rule-badge">合拆</span></td>
+                                <td>重量≤20kg；订单≤5单</td>
+                                <td>6</td>
+                                <td><span class="badge badge-warning">已禁用</span></td>
+                                <td>2023-12-01 00:00</td>
+                                <td>
+                                    <button class="btn btn-sm btn-default" onclick="editRule()">启用</button>
+                                    <button class="btn btn-sm btn-default" onclick="viewRuleLog()">日志</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：SKU详情 -->
+    <div class="modal" id="modal-detail">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">SKU详情 - SKU12345</div>
+                <div class="modal-close" onclick="closeModal('modal-detail')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-label">SKU编码：</div>
+                    <div>SKU12345</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">SKU名称：</div>
+                    <div>商品A-红色-L码</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">各仓明细：</div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>仓点</th>
+                                    <th>在库量</th>
+                                    <th>在途量</th>
+                                    <th>锁定量</th>
+                                    <th>更新时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>德国仓</td>
+                                    <td>120</td>
+                                    <td>50</td>
+                                    <td>30</td>
+                                    <td>2024-01-15 10:30</td>
+                                </tr>
+                                <tr>
+                                    <td>波兰仓</td>
+                                    <td>200</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>2024-01-15 09:15</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">近7天库存变动趋势：</div>
+                    <div class="chart-placeholder">折线图（待开发）</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-detail')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：调拨发起 -->
+    <div class="modal" id="modal-transfer">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">调拨发起</div>
+                <div class="modal-close" onclick="closeModal('modal-transfer')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <div class="form-label">调拨单号：</div>
+                        <input type="text" class="input" value="TB20240115004" readonly>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">申请日期：</div>
+                        <input type="date" class="input" value="2024-01-15">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <div class="form-label">SKU：</div>
+                        <input type="text" class="input" value="商品A-红色-L码" readonly>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">SKU编码：</div>
+                        <input type="text" class="input" value="SKU12345" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <div class="form-label required">调出仓：</div>
+                        <select class="select">
+                            <option>请选择</option>
+                            <option>波兰仓</option>
+                            <option>深圳仓</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label required">调入仓：</div>
+                        <input type="text" class="input" value="德国仓" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <div class="form-label required">调拨数量：</div>
+                        <input type="number" class="input" placeholder="不能超过调出仓当前安全库存">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">预计到仓时间：</div>
+                        <input type="datetime-local" class="input">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">成本：</div>
+                    <input type="text" class="input" value="€200.00" readonly>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-transfer')">取消</button>
+                <button class="btn btn-primary" onclick="submitTransfer()">确认提交</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：调拨详情 -->
+    <div class="modal" id="modal-transfer-detail">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">调拨详情 - TB20240115001</div>
+                <div class="modal-close" onclick="closeModal('modal-transfer-detail')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-label">调拨单号：</div>
+                    <div>TB20240115001</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">SKU信息：</div>
+                    <div>SKU12345 - 商品A-红色-L码</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">调出仓：</div>
+                    <div>波兰仓</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">调入仓：</div>
+                    <div>德国仓</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">调拨数量：</div>
+                    <div>100</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">完整轨迹：</div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>状态</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2024-01-15 10:30</td>
+                                    <td><span class="badge badge-success">已完成</span></td>
+                                    <td>调入仓确认入库</td>
+                                </tr>
+                                <tr>
+                                    <td>2024-01-15 08:00</td>
+                                    <td><span class="badge badge-info">在途</span></td>
+                                    <td>运输中，预计14:00到达</td>
+                                </tr>
+                                <tr>
+                                    <td>2024-01-15 06:00</td>
+                                    <td><span class="badge badge-info">已出库</span></td>
+                                    <td>调出仓WMS确认出库</td>
+                                </tr>
+                                <tr>
+                                    <td>2024-01-14 15:30</td>
+                                    <td><span class="badge badge-warning">待出库</span></td>
+                                    <td>调拨申请已提交</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-transfer-detail')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：分仓调整 -->
+    <div class="modal" id="modal-allocation-adjust">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">分仓调整</div>
+                <div class="modal-close" onclick="closeModal('modal-allocation-adjust')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-label">订单号：</div>
+                    <input type="text" class="input" value="ORD20240115001" readonly>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">当前推荐仓：</div>
+                    <input type="text" class="input" value="德国仓" readonly>
+                </div>
+                <div class="form-group">
+                    <div class="form-label required">选择新仓点：</div>
+                    <select class="select">
+                        <option>请选择</option>
+                        <option>波兰仓</option>
+                        <option>广州仓</option>
+                    </select>
+                    <div style="font-size: 12px; color: #8c8c8c; margin-top: 4px;">仅显示有该订单所有SKU库存的仓点</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label required">调整理由：</div>
+                    <select class="select">
+                        <option>请选择</option>
+                        <option>锁定库存</option>
+                        <option>异常处理</option>
+                        <option>其他</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-allocation-adjust')">取消</button>
+                <button class="btn btn-primary" onclick="saveAllocationAdjust()">保存调整</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：拆单详情 -->
+    <div class="modal" id="modal-split-detail">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">拆单详情 - ORD20240115010</div>
+                <div class="modal-close" onclick="closeModal('modal-split-detail')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-label">主订单号：</div>
+                    <div>ORD20240115010</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">用户信息：</div>
+                    <div>张三 | 13800138000 | 中国北京 100000</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">子订单明细：</div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>子订单号</th>
+                                    <th>SKU</th>
+                                    <th>数量</th>
+                                    <th>仓点</th>
+                                    <th>预计发货时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ORD20240115010-1</td>
+                                    <td>SKU12345</td>
+                                    <td>3</td>
+                                    <td>德国仓</td>
+                                    <td>2024-01-16 10:00</td>
+                                </tr>
+                                <tr>
+                                    <td>ORD20240115010-2</td>
+                                    <td>SKU12346</td>
+                                    <td>2</td>
+                                    <td>波兰仓</td>
+                                    <td>2024-01-17 14:00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-split-detail')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：新建合单 -->
+    <div class="modal" id="modal-merge">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">新建合单</div>
+                <div class="modal-close" onclick="closeModal('modal-merge')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-label">筛选条件：</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="form-label">用户ID：</div>
+                            <input type="text" class="input" placeholder="请输入用户ID">
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label">手机号：</div>
+                            <input type="text" class="input" placeholder="请输入手机号">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="form-label">收货地址：</div>
+                            <input type="text" class="input" placeholder="请输入收货地址">
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label">订单状态：</div>
+                            <select class="select">
+                                <option>待发货</option>
+                                <option>待分仓</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">查询匹配订单</button>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">待合并订单（最多5个）：</div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" class="checkbox"></th>
+                                    <th>订单号</th>
+                                    <th>用户</th>
+                                    <th>商品数量</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox" class="checkbox"></td>
+                                    <td>ORD20240115020</td>
+                                    <td>张三</td>
+                                    <td>2</td>
+                                    <td><span class="badge badge-warning">待发货</span></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="checkbox"></td>
+                                    <td>ORD20240115021</td>
+                                    <td>张三</td>
+                                    <td>3</td>
+                                    <td><span class="badge badge-warning">待发货</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">合并后发货仓点：</div>
+                    <select class="select">
+                        <option>系统推荐：德国仓</option>
+                        <option>波兰仓</option>
+                        <option>广州仓</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="form-label required">合单理由：</div>
+                    <input type="text" class="input" placeholder="请输入合单理由">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-merge')">取消</button>
+                <button class="btn btn-primary" onclick="confirmMerge()">确认合单</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：手动拆分 -->
+    <div class="modal" id="modal-split-manual">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">手动拆分订单</div>
+                <div class="modal-close" onclick="closeModal('modal-split-manual')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-label">主订单号：</div>
+                    <input type="text" class="input" placeholder="请输入主订单号">
+                </div>
+                <div class="form-group">
+                    <div class="form-label">拆分方式：</div>
+                    <select class="select">
+                        <option>按SKU拆分</option>
+                        <option>按仓点拆分</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">选择拆分项：</div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" class="checkbox"></th>
+                                    <th>SKU</th>
+                                    <th>数量</th>
+                                    <th>仓点</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox" class="checkbox"></td>
+                                    <td>SKU12345</td>
+                                    <td>3</td>
+                                    <td>德国仓</td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="checkbox"></td>
+                                    <td>SKU12346</td>
+                                    <td>2</td>
+                                    <td>德国仓</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label required">拆分理由：</div>
+                    <input type="text" class="input" placeholder="请输入拆分理由">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-split-manual')">取消</button>
+                <button class="btn btn-primary" onclick="confirmSplitManual()">确认拆分</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：订单履约跟踪 -->
+    <div class="modal" id="modal-order-track">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">履约详情 - ORD20240116001</div>
+                <div class="modal-close" onclick="closeModal('modal-order-track')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-label">履约时间轴：</div>
+                    <div class="timeline">
+                        <div class="timeline-item completed">
+                            <div class="timeline-status">
+                                <strong>订单采集</strong>
+                                <span>2024-01-15 09:00</span>
+                            </div>
+                            <div>执行仓：系统</div>
+                        </div>
+                        <div class="timeline-item completed">
+                            <div class="timeline-status">
+                                <strong>分仓完成</strong>
+                                <span>2024-01-15 09:05</span>
+                            </div>
+                            <div>执行仓：德国仓</div>
+                        </div>
+                        <div class="timeline-item completed">
+                            <div class="timeline-status">
+                                <strong>拣货/出库</strong>
+                                <span>2024-01-15 12:30</span>
+                            </div>
+                            <div>执行仓：德国仓</div>
+                        </div>
+                        <div class="timeline-item current">
+                            <div class="timeline-status">
+                                <strong>清关</strong>
+                                <span>2024-01-16 08:00</span>
+                            </div>
+                            <div>执行主体：海关 | 状态：查验中</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-status">
+                                <strong>配送</strong>
+                                <span>-</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-status">
+                                <strong>签收</strong>
+                                <span>-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">关联信息：</div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>子订单号</th>
+                                    <th>SKU</th>
+                                    <th>数量</th>
+                                    <th>仓点</th>
+                                    <th>物流轨迹</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ORD20240116001-1</td>
+                                    <td>SKU12345</td>
+                                    <td>2</td>
+                                    <td>德国仓</td>
+                                    <td><a href="#" style="color:#1890ff;">查看</a></td>
+                                </tr>
+                                <tr>
+                                    <td>ORD20240116001-2</td>
+                                    <td>SKU12346</td>
+                                    <td>1</td>
+                                    <td>波兰仓</td>
+                                    <td><a href="#" style="color:#1890ff;">查看</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">异常记录：</div>
+                    <div class="alert alert-success">暂无异常，履约正常进行。</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-order-track')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：清关详情 -->
+    <div class="modal" id="modal-customs">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">清关详情</div>
+                <div class="modal-close" onclick="closeModal('modal-customs')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-label">清关节点：</div>
+                    <div class="timeline">
+                        <div class="timeline-item completed">
+                            <div class="timeline-status"><strong>申报</strong><span>2024-01-15 10:00</span></div>
+                            <div>执行：中间件 | 报关单号：BG20240115001</div>
+                        </div>
+                        <div class="timeline-item completed">
+                            <div class="timeline-status"><strong>核验</strong><span>2024-01-15 12:00</span></div>
+                            <div>执行：海关 | 税费：$35</div>
+                        </div>
+                        <div class="timeline-item current">
+                            <div class="timeline-status"><strong>查验</strong><span>2024-01-15 16:30</span></div>
+                            <div>执行：海关 | 备注：随机抽检</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-status"><strong>放行</strong><span>-</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">海关反馈信息：</div>
+                    <div class="alert alert-warning">待补充商品成分说明，预计延迟 1-2 天。</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">附件：</div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>文件名称</th>
+                                    <th>类型</th>
+                                    <th>上传时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>报关单.pdf</td>
+                                    <td>PDF</td>
+                                    <td>2024-01-15 10:05</td>
+                                    <td><button class="btn btn-sm btn-default">下载</button></td>
+                                </tr>
+                                <tr>
+                                    <td>税费回执.jpg</td>
+                                    <td>JPG</td>
+                                    <td>2024-01-15 12:10</td>
+                                    <td><button class="btn btn-sm btn-default">下载</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-customs')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：异常处理 -->
+    <div class="modal" id="modal-exception">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">异常处理 - ORD20240115088</div>
+                <div class="modal-close" onclick="closeModal('modal-exception')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-label">异常描述：</div>
+                    <div class="alert alert-danger">
+                        清关数据校验失败：商品编码与海关规则不符，清关延迟，预计延误2天。
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">推荐方案：</div>
+                    <select class="select">
+                        <option>修改商品编码为 HS-9901，重新提交清关</option>
+                        <option>转派至合规专员复核</option>
+                        <option>延后处理，等待客户反馈</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">关联数据：</div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>资料</th>
+                                    <th>说明</th>
+                                    <th>查看</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>申报数据</td>
+                                    <td>SKU属性、报关要素</td>
+                                    <td><button class="btn btn-sm btn-default">查看</button></td>
+                                </tr>
+                                <tr>
+                                    <td>海关反馈</td>
+                                    <td>编码不匹配，需补充说明</td>
+                                    <td><button class="btn btn-sm btn-default">下载</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">材料上传：</div>
+                    <div class="upload-area">点击或拖拽上传（支持 PDF/JPG）</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">处理说明：</div>
+                    <textarea class="input" style="width:100%;height:80px;" placeholder="填写处理动作、转派原因或延后说明"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="transferException()">转派</button>
+                <button class="btn btn-default" onclick="delayException()">延后处理</button>
+                <button class="btn btn-primary" onclick="submitException()">提交处理</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：导出设置 -->
+    <div class="modal" id="modal-export">
+        <div class="modal-content" style="max-width:520px;">
+            <div class="modal-header">
+                <div class="modal-title">导出配置</div>
+                <div class="modal-close" onclick="closeModal('modal-export')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-label">导出内容：</div>
+                    <select class="select">
+                        <option>订单明细</option>
+                        <option>异常统计</option>
+                        <option>履约汇总</option>
+                        <option>清关异常明细</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">导出格式：</div>
+                    <select class="select">
+                        <option>Excel</option>
+                        <option>PDF</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display:flex;align-items:center;gap:8px;">
+                    <input type="checkbox" class="checkbox" checked>
+                    <span class="filter-label">仅导出当前筛选结果（≤1万条）</span>
+                </div>
+                <div class="alert alert-info">商家角色仅可导出自有店铺数据，自动隐藏物流成本等敏感字段。</div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-export')">取消</button>
+                <button class="btn btn-primary" onclick="confirmExport()">确认导出</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：规则测试 -->
+    <div class="modal" id="modal-rule-test">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">规则测试结果</div>
+                <div class="modal-close" onclick="closeModal('modal-rule-test')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success">
+                    测试通过：满足条件「品类=服饰且库存≥15且距离≤200km」，执行动作「分至洛杉矶仓」。
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>条件</th>
+                                <th>输入值</th>
+                                <th>结果</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>品类限制</td>
+                                <td>服饰</td>
+                                <td><span class="badge badge-success">命中</span></td>
+                            </tr>
+                            <tr>
+                                <td>库存阈值</td>
+                                <td>20件</td>
+                                <td><span class="badge badge-success">命中</span></td>
+                            </tr>
+                            <tr>
+                                <td>距离阈值</td>
+                                <td>180km</td>
+                                <td><span class="badge badge-success">命中</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-rule-test')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：规则编辑 -->
+    <div class="modal" id="modal-rule-edit">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">编辑规则 - 洛杉矶分仓规则</div>
+                <div class="modal-close" onclick="closeModal('modal-rule-edit')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-label">限制条件阈值：</div>
+                    <input type="number" class="input" value="15" placeholder="库存阈值">
+                </div>
+                <div class="form-group">
+                    <div class="form-label">执行动作：</div>
+                    <select class="select">
+                        <option>分至洛杉矶仓</option>
+                        <option>分至纽约仓</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">生效时间：</div>
+                    <input type="datetime-local" class="input">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-rule-edit')">取消</button>
+                <button class="btn btn-primary" onclick="showConfirm('修改后需重新测试，确定保存？', () => { closeModal('modal-rule-edit'); alert('规则已提交测试'); })">保存并测试</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：规则冲突 -->
+    <div class="modal" id="modal-rule-conflict">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">规则冲突处理</div>
+                <div class="modal-close" onclick="closeModal('modal-rule-conflict')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    美国纽约订单触发冲突：规则A（洛杉矶仓，优先级8）与规则B（纽约仓，优先级7）条件一致但动作不同。
+                </div>
+                <div class="form-group">
+                    <div class="form-label">解决方案：</div>
+                    <select class="select">
+                        <option>方案1：按优先级生效，仅规则A生效</option>
+                        <option>方案2：手动选择规则B生效</option>
+                        <option>方案3：调整规则优先级</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">说明：</div>
+                    <textarea class="input" style="width:100%;height:80px;" placeholder="填写冲突处理说明，自动记录至规则日志"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-rule-conflict')">取消</button>
+                <button class="btn btn-primary" onclick="showConfirm('确认按照所选方案处理冲突？', () => { closeModal('modal-rule-conflict'); alert('冲突处理完成'); })">确认处理</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：规则日志 -->
+    <div class="modal" id="modal-rule-log">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">规则日志 - 洛杉矶分仓规则</div>
+                <div class="modal-close" onclick="closeModal('modal-rule-log')">×</div>
+            </div>
+            <div class="modal-body">
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>操作人</th>
+                                <th>动作</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2025-11-05 10:00</td>
+                                <td>运营-张三</td>
+                                <td>修改阈值</td>
+                                <td>库存阈值 15→20</td>
+                            </tr>
+                            <tr>
+                                <td>2025-11-05 10:05</td>
+                                <td>系统</td>
+                                <td>测试通过</td>
+                                <td>执行动作：洛杉矶仓</td>
+                            </tr>
+                            <tr>
+                                <td>2025-11-05 10:10</td>
+                                <td>管理员</td>
+                                <td>审核通过</td>
+                                <td>生效时间 2025-11-05 12:00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-rule-log')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认提示弹窗 -->
+    <div class="modal" id="modal-confirm">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <div class="modal-title">确认操作</div>
+                <div class="modal-close" onclick="closeModal('modal-confirm')">×</div>
+            </div>
+            <div class="modal-body">
+                <div id="confirm-message">确定要执行此操作吗？</div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('modal-confirm')">取消</button>
+                <button class="btn btn-primary" id="confirm-ok">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面切换
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const pageId = this.getAttribute('data-page');
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById(`page-${pageId}`).classList.add('active');
+            });
+        });
+
+        // 子菜单切换
+        document.querySelectorAll('.sub-menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const subId = this.getAttribute('data-sub');
+                const parentPage = this.closest('.page');
+                parentPage.querySelectorAll('.sub-menu-item').forEach(sub => sub.classList.remove('active'));
+                parentPage.querySelectorAll('.sub-page').forEach(sub => sub.classList.remove('active'));
+                this.classList.add('active');
+                const subPage = parentPage.querySelector(`#sub-${subId}`);
+                if (subPage) {
+                    subPage.classList.add('active');
+                }
+            });
+        });
+
+        // 弹窗控制
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // SKU详情
+        function showDetail(sku) {
+            showModal('modal-detail');
+            document.querySelector('#modal-detail .modal-title').textContent = `SKU详情 - ${sku}`;
+        }
+
+        // 调拨相关
+        function confirmTransfer() {
+            showModal('modal-transfer');
+        }
+
+        function modifyTransfer() {
+            showModal('modal-transfer');
+        }
+
+        function delayAlert() {
+            showConfirm('确定要延后处理此预警吗？', function() {
+                alert('已延后处理');
+            });
+        }
+
+        function submitTransfer() {
+            showConfirm('调拨申请已提交，将同步至调出仓WMS，是否确认？', function() {
+                closeModal('modal-transfer');
+                alert('调拨申请已提交，将同步至调出仓WMS');
+            });
+        }
+
+        function showTransferDetail(transferNo) {
+            showModal('modal-transfer-detail');
+            document.querySelector('#modal-transfer-detail .modal-title').textContent = `调拨详情 - ${transferNo}`;
+        }
+
+        // 分仓相关
+        function batchConfirm() {
+            showConfirm('确认分仓？将同步至对应仓WMS', function() {
+                alert('分仓成功，已通知WMS拣货');
+            });
+        }
+
+        function confirmAllocation(orderNo) {
+            showConfirm('确认分仓？将同步至对应仓WMS', function() {
+                alert('分仓成功，已通知WMS拣货');
+            });
+        }
+
+        function adjustAllocation(orderNo) {
+            showModal('modal-allocation-adjust');
+            document.querySelector('#modal-allocation-adjust input[readonly]').value = orderNo;
+        }
+
+        function saveAllocationAdjust() {
+            showConfirm('调整后将覆盖原分仓结果，是否确认？', function() {
+                closeModal('modal-allocation-adjust');
+                alert('分仓调整完成');
+            });
+        }
+
+        // 拆单相关
+        function batchConfirmSplit() {
+            showConfirm('确认拆单？将同步至对应WMS', function() {
+                alert('拆单成功，子订单已同步至WMS');
+            });
+        }
+
+        function showSplitDetail(orderNo) {
+            showModal('modal-split-detail');
+            document.querySelector('#modal-split-detail .modal-title').textContent = `拆单详情 - ${orderNo}`;
+        }
+
+        function confirmSplit(orderNo) {
+            showConfirm('确认拆单？将同步至对应WMS', function() {
+                alert('拆单成功，子订单已同步至WMS');
+            });
+        }
+
+        // 合拆调整
+        function showMergeModal() {
+            showModal('modal-merge');
+        }
+
+        function showSplitModal() {
+            showModal('modal-split-manual');
+        }
+
+        function confirmMerge() {
+            showConfirm('合单后原订单将关闭，生成新主订单，是否确认？', function() {
+                closeModal('modal-merge');
+                alert('合单成功');
+            });
+        }
+
+        function confirmSplitManual() {
+            showConfirm('确认拆分？将生成新子订单', function() {
+                closeModal('modal-split-manual');
+                alert('拆分成功，新子订单已同步至WMS');
+            });
+        }
+
+        // 确认提示
+        function showConfirm(message, callback) {
+            document.getElementById('confirm-message').textContent = message;
+            const okBtn = document.getElementById('confirm-ok');
+            okBtn.onclick = function() {
+                closeModal('modal-confirm');
+                if (callback) callback();
+            };
+            showModal('modal-confirm');
+        }
+
+        // 点击弹窗外部关闭
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        // 履约看板交互
+        function openOrderTrack(orderNo) {
+            const modal = document.getElementById('modal-order-track');
+            modal.querySelector('.modal-title').textContent = `履约详情 - ${orderNo}`;
+            showModal('modal-order-track');
+        }
+
+        function openCustomsDetail() {
+            showModal('modal-customs');
+        }
+
+        function handleException(orderNo) {
+            const modal = document.getElementById('modal-exception');
+            modal.querySelector('.modal-title').textContent = `异常处理 - ${orderNo}`;
+            showModal('modal-exception');
+        }
+
+        function submitException() {
+            showConfirm('确认提交处理并同步至执行主体？', () => {
+                closeModal('modal-exception');
+                alert('异常处理完成，状态更新为处理中');
+            });
+        }
+
+        function transferException() {
+            showConfirm('确认转派给其他角色处理？', () => {
+                alert('已转派至指定角色');
+            });
+        }
+
+        function delayException() {
+            showConfirm('确认延后处理并设置提醒？', () => {
+                alert('已延后，超时将再次提醒');
+            });
+        }
+
+        function openExportPanel() {
+            showModal('modal-export');
+        }
+
+        function confirmExport() {
+            closeModal('modal-export');
+            alert('导出中，预计1-3分钟，请稍候下载');
+        }
+
+        // 规则配置交互
+        function openRuleTest() {
+            showModal('modal-rule-test');
+        }
+
+        function submitRule() {
+            showConfirm('提交后将进入管理员审核，是否继续？', () => {
+                alert('规则已提交审核');
+            });
+        }
+
+        function editRule() {
+            showModal('modal-rule-edit');
+        }
+
+        function disableRule() {
+            showConfirm('确定禁用该规则？禁用后不影响历史订单。', () => {
+                alert('规则已禁用');
+            });
+        }
+
+        function resolveConflict() {
+            showModal('modal-rule-conflict');
+        }
+
+        function viewRuleLog() {
+            showModal('modal-rule-log');
+        }
+    </script>
+</body>
+</html>
